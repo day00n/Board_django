@@ -1,0 +1,239 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <title>게시판 - 목록</title>
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap" rel="stylesheet">  
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  </head>
+  <style>
+    body {
+      font-family: 'Gowun Dodum', sans-serif;
+      background-color: #fff;
+      color: #333;
+    }
+
+    /* 헤더 */
+    header .navbar {
+      background-color: #d3c5ff !important; /* 연보라 */
+    }
+
+    header .navbar-brand strong {
+      color: black;
+      font-size: 1.4rem;
+    }
+
+    /* 검색바 */
+    .search-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding: 15px 20px;
+      border: 2px solid #d8c3ff;
+      border-radius: 16px;
+    }
+
+    .search-bar input,
+    .search-bar select {
+      padding: 8px;
+      font-size: 14px;
+      border: 1px solid #c9b3f5;
+      border-radius: 12px;
+    }
+
+    .search-bar button {
+      padding: 8px 16px;
+      font-size: 14px;
+      background-color: #a78bfa;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      transition: 0.2s;
+    }
+
+    .search-bar button:hover {
+      background-color: #8663eb;
+    }
+
+    /* 버튼 스타일 */
+    .btn-primary {
+      background-color: #a78bfa;
+      border: none;
+      border-radius: 16px;
+    }
+
+    .btn-primary:hover {
+      background-color: #8663eb;
+    }
+
+    /* 제목 */
+    .container h2 {
+      font-size: 1.8rem;
+      color: #000000;
+      margin-bottom: 20px;
+    }
+
+    /* 게시판 테이블 */
+    .table thead {
+      border-top: 2px solid #d8c3ff;
+      border-bottom: 2px solid #d8c3ff;
+    }
+
+    .table th,
+    .table td {
+      vertical-align: middle !important;
+      border-top: none;
+    }
+
+    .table tr:hover td {
+      background-color: #f3efff;
+      transition: 0.2s;
+    }
+
+    /* 총 게시글 수 */
+    .total-count {
+      font-size: 1.3rem;
+      color: #555;
+    }
+
+    a {
+      color: #555;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+  <body class="font-style">
+    <header>
+      <div class="navbar navbar-dark bg-dark shadow-sm mb-3">
+        <div class="container d-flex justify-content-between">
+          <a href="/" class="navbar-brand d-flex align-items-center">
+            <strong>운영 FAQ 시스템</strong>
+          </a>
+        </div>
+      </div>
+    </header>
+    <br>
+    <div class="container ">
+      <nav class="navbar navbar-light bg-light">
+        <a class="navbar-brand fw-bold center" href="#">이슈리스트</a>
+        <form class="d-flex flex-wrap align-items-center ms-auto" role="search">    
+          <input class="form-control me-2 mb-2" type="search" placeholder="내용 검색" name="search-text" style="width: 200px;">
+     
+          <select class="form-select me-2 mb-2" name="error-type" style="width: 200px;">
+            <option value="error-none">== 장애유형 ==</option>
+            <option value="error-source">소스코드 문제</option>
+            <option value="error-basicdata">기초데이터 오류</option>
+            <option value="error-db">데이터베이스설계 오류</option>
+            <option value="error-if">연계 오류</option>
+            <option value="error-user">사용자 오류</option>
+            <option value="error-dev">개발자 오류</option>
+            <option value="error-datareq">데이터수정 요청</option>
+            <option value="error-upgrade">프로그램업그레이드</option>
+            <option value="error-etc">기타</option>
+          </select>
+          <select class="form-select me-2 mb-2" name="error-type" style="width: 200px;">
+            <option value="handle-none">== 처리유형 ==</option>
+            <option value="handle-db">DB설계 수정</option>
+            <option value="handle-ui">화면수정</option>
+            <option value="handle-java">JAVA단 수정</option>
+             <option value="handle-query">쿼리 수정</option>
+            <option value="handle-rd">RD 수정</option>
+            <option value="handle-out">외부업체 전달</option>
+            <option value="handle-datamod">데이터 수정</option>
+            <option value="handle-guide">업무 가이드</option>
+            <option value="handle-etc">기타</option>
+          </select>
+          <input class="form-control me-2 mb-2" type="date" name="schedule" min="2024-04-01" max="2030-04-30" style="width: 200px;">
+          <button class="btn btn-primary mb-2" type="submit">검색</button>
+        </form>
+      </nav>
+      <br>
+      <div class="row">
+        <div class="col-auto ml-auto">
+          <form method="post" action="{% url 'sync' %}" style="display: inline-block; margin-right: 8px;">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary"> 동기화</button>
+          </form>
+          <a class="btn btn-primary" href="/post" role="button"> 글쓰기</a>
+        </div>
+      </div>
+      <br>
+      <table class="table">
+        <thead class="thead-light">
+          <tr class="text-center">
+            <th scope="col">글 제목</th>
+            <th scope="col">장애유형</th>
+            <th scope="col">처리유형</th>
+            <th scope="col">상태</th>
+            <th scope="col">접수날짜</th>
+          </tr>
+        </thead>
+        <tbody>
+	  <p>총 게시글 수: {{ boards.count }}</p>
+          {% for board in boards %}
+            <tr class="text-center">
+              <th scope="row">
+	        <a href="{% url 'detail' board.id %}">
+                  <span>{{ board.title }}</span>
+              </th>
+              <td>
+                <span>{{ board.ERROR_TP }}</span>
+              </td>
+              <td>
+                <span>{{ board.HANDLE_TP }}</span>
+              </td>
+              <td>
+                <span>{{ board.STATUS }}</span>
+              </td>
+              <td>
+                <span>{{ board.CREATE_DATE|date:"Y-m-d" }}</span>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+          {% if issues.has_previous %}
+            <li class="page-item">
+              <a class="page-link" href="?page=1">&laquo; 처음</a>
+            </li>
+            <li class="page-item">
+              <a class="page-link" href="?page={{ issues.previous_page_number }}">&lsaquo; 이전</a>
+            </li>
+          {% endif %}
+
+          {% for num in issues.paginator.page_range %}
+            {% if num == issues.number %}
+              <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+            {% elif num >= issues.number|add:-2 and num <= issues.number|add:2 %}
+              <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+            {% endif %}
+          {% endfor %}
+
+          {% if issues.has_next %}
+            <li class="page-item">
+              <a class="page-link" href="?page={{ issues.next_page_number }}">다음 &rsaquo;</a>
+            </li>
+            <li class="page-item">
+              <a class="page-link" href="?page={{ issues.paginator.num_pages }}">끝 &raquo;</a>
+            </li>
+          {% endif %}
+        </ul>
+      </nav>
+      
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
+  </body>
+</html>
+

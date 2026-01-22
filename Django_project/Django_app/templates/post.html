@@ -1,0 +1,201 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>게시판 - 글쓰기</title>
+  <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap" rel="stylesheet">
+</head>
+  <style>
+    body {
+      font-family: "Gowun Dodum", sans-serif;
+      background-color: #fff;
+      color: #333;
+    }
+
+    header .navbar {
+      background-color: #d3c5ff !important; /* 연보라 */
+    }
+
+    header .navbar-brand strong {
+      color: black;
+      font-size: 1.4rem;
+    }
+
+    .detail-container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 30px;
+      border: 2px solid #d8c3ff;
+      border-radius: 16px;
+      box-shadow: 0 4px 10px rgba(168, 137, 255, 0.1);
+    }
+
+    .detail-title {
+      font-size: 26px;
+      font-weight: bold;
+      margin-bottom: 25px;
+      color: #333333;
+    }
+
+    .detail-label {
+      font-weight: bold;
+      color: #333333;
+      margin-right: 5px;
+    }
+
+    .detail-info {
+      margin-bottom: 10px;
+    }
+
+    .detail-content {
+      white-space: pre-wrap;
+      background-color: #f8f9fa;
+      padding: 20px;
+      border: 1px solid #e2d7ff;
+      border-radius: 12px;
+      margin-top: 10px;
+    }
+
+
+    /* 글쓰기-유형설정바 */
+    .post-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding: 15px 20px;
+      border: 2px solid #d8c3ff;
+      border-radius: 16px;
+    }
+
+    .post-bar input,
+    .post-bar select {
+      padding: 8px;
+      font-size: 14px;
+      border: 1px solid #c9b3f5;
+      border-radius: 12px;
+    }
+
+    .post-bar button {
+      padding: 8px 16px;
+      font-size: 14px;
+      background-color: #a78bfa;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      transition: 0.2s;
+    }
+
+    .post-bar button:hover {
+      background-color: #8663eb;
+    }
+
+    .btn-secondary {
+      background-color: #a78bfa;
+      border: none;
+      border-radius: 16px;
+      color: white;
+      padding: 8px 18px;
+      transition: 0.3s;
+    }
+
+    .btn-secondary:hover {
+      background-color: #8663eb;
+      color: white;
+    }
+
+    hr {
+      border-top: 1px solid #dcd0ff;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="navbar navbar-dark shadow-sm mb-3">
+      <div class="container d-flex justify-content-between">
+        <a href="/" class="navbar-brand d-flex align-items-center">
+          <strong>운영 FAQ 시스템</strong>
+        </a>
+      </div>
+    </div>
+  </header>
+  <div class="container form-container">
+    <h2 class="mb-4">이슈 등록</h2>
+    
+    <form action="/post" method="post">
+      {% csrf_token %}
+      <!-- 셀렉트박스 모음 -->
+      <div class="post-bar font-style">
+        <select class="form-control w-auto" name="error-type">
+          <option value="error-none">== 장애유형 ==</option>
+          <option value="error-source">소스코드 문제</option>
+          <option value="error-basicdata">기초데이터 오류</option>
+          <option value="error-db">데이터베이스설계 오류</option>
+          <option value="error-if">연계 오류</option>
+          <option value="error-user">사용자 오류</option>
+          <option value="error-dev">개발자 오류</option>
+          <option value="error-datareq">데이터수정 요청</option>
+          <option value="error-upgrade">프로그램업그레이드</option>
+          <option value="error-etc">기타</option>
+        </select>
+
+        <select class="form-control w-auto" name="handle-type">
+          <option value="handle-none">== 처리유형 ==</option>
+          <option value="handle-db">DB설계 수정</option>
+          <option value="handle-ui">화면수정</option>
+          <option value="handle-java">JAVA단 수정</option>
+          <option value="handle-query">쿼리 수정</option>
+          <option value="handle-rd">RD 수정</option>
+          <option value="handle-out">외부업체 전달</option>
+          <option value="handle-datamod">데이터 수정</option>
+          <option value="handle-guide">업무 가이드</option>
+          <option value="handle-etc">기타</option>
+        </select>
+
+        <select class="form-control w-auto" name="status">
+          <option value="status-none">== 상태 ==</option>
+          <option value="regist">접수완료</option>
+          <option value="handling">처리중</option>
+          <option value="finish">처리완료</option>
+        </select>
+
+        <input class="form-control w-auto" type="date" name="schedule" min="2024-04-01" max="2030-04-30" />
+      </div>
+      <br>
+      <!-- 제목 -->
+      <div class="form-group row">
+        <label for="inputTitle" class="col-sm-2 col-form-label"><strong>제목</strong></label>
+        <div class="col-sm-10">
+          <input type="text" name="title" class="form-control" id="inputTitle" required />
+        </div>
+      </div>
+
+      <!-- 내용 -->
+      <div class="form-group row mt-3">
+        <label for="inputContent" class="col-sm-2 col-form-label"><strong>내용</strong></label>
+        <div class="col-sm-10">
+          <textarea name="content" class="form-control" id="inputContent" style="height: 200px;" required></textarea>
+        </div>
+      </div>
+
+      <!-- 버튼 -->
+      <div class="row mt-4">
+        <div class="col-auto mr-auto">
+          <a href="{% url 'index' %}" class="btn btn-secondary">← 목록</a>
+        </div>
+        <div class="col-auto">
+          <input class="btn btn-primary" type="submit" value="등록" />
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
+</body>
+</html>
+

@@ -1,0 +1,132 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>게시판 - 상세보기</title>
+  <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap" rel="stylesheet">
+</head>
+  <style>
+    body {
+      font-family: "Gowun Dodum", sans-serif;
+      background-color: #fff;
+      color: #333;
+    }
+
+    header .navbar {
+      background-color: #d3c5ff !important; /* 연보라 */
+    }
+
+    header .navbar-brand strong {
+      color: black;
+      font-size: 1.4rem;
+    }
+
+    .detail-container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 30px;
+      border: 2px solid #d8c3ff;
+      border-radius: 16px;
+      box-shadow: 0 4px 10px rgba(168, 137, 255, 0.1);
+    }
+
+    .detail-title {
+      font-size: 26px;
+      font-weight: bold;
+      margin-bottom: 25px;
+      color: #333333;
+    }
+
+    .detail-label {
+      font-weight: bold;
+      color: #333333;
+      margin-right: 5px;
+    }
+
+    .detail-info {
+      margin-bottom: 10px;
+    }
+
+    .detail-content {
+      white-space: pre-wrap;
+      background-color: #f8f9fa;
+      padding: 20px;
+      border: 1px solid #e2d7ff;
+      border-radius: 12px;
+      margin-top: 10px;
+    }
+
+    .btn-secondary {
+      background-color: #a78bfa;
+      border: none;
+      border-radius: 16px;
+      color: white;
+      padding: 8px 18px;
+      transition: 0.3s;
+    }
+
+    .btn-secondary:hover {
+      background-color: #8663eb;
+      color: white;
+    }
+
+    hr {
+      border-top: 1px solid #dcd0ff;
+    }
+  </style>
+<body class="font-style">
+  <header>
+    <div class="navbar navbar-dark bg-dark shadow-sm mb-3">
+      <div class="container d-flex justify-content-between">
+        <a href="{% url 'index' %}" class="navbar-brand d-flex align-items-center">
+          <strong>운영 FAQ 시스템</strong>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <div class="container detail-container">
+    <div class="detail-title">{{ post.title }}</div>
+    <table class="table table-bordered mt-4" style="border-color: #dcd0ff;">
+      <tbody>
+        <tr>
+          <th scope="row" style="width: 150px; background-color: #f6f2ff; color: #7b5fdd;">장애유형</th>
+          <td>{{ post.ERROR_TP }}</td>
+        </tr>
+        <tr>
+          <th scope="row" style="background-color: #f6f2ff; color: #7b5fdd;">처리유형</th>
+          <td>{{ post.HANDLE_TP }}</td>
+        </tr>
+        <tr>
+          <th scope="row" style="background-color: #f6f2ff; color: #7b5fdd;">상태</th>
+          <td>{{ post.STATUS }}</td>
+        </tr>
+        <tr>
+          <th scope="row" style="background-color: #f6f2ff; color: #7b5fdd;">접수날짜</th>
+          <td>{{ post.CREATE_DATE|date:"Y-m-d" }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <hr>
+
+    <div>
+      <span class="detail-label">내용:</span>
+      <div class="detail-content">{{ post.content|safe }}</div>
+    </div>
+
+    <br>
+    <a href="{% url 'index' %}" class="btn btn-secondary">← 목록으로</a>
+  </div>
+
+  <!-- Bootstrap JS 구성 -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+  <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
+</body>
+</html>
+

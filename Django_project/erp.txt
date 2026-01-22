@@ -1,0 +1,36 @@
+<root>
+<dataset id="DST_List">
+	<colinfo id="ACCTUT_CD" size="256" summ="default" type="STRING"/>
+    <colinfo id="CUST_NM" size="256" summ="default" type="STRING"/>
+    <colinfo id="DTL" size="256" summ="default" type="STRING"/>
+    <colinfo id="WON_AMT" size="256" summ="default" type="STRING"/>
+    <colinfo id="REQST_AMT" size="256" summ="default" type="STRING"/>
+    <colinfo id="SUPP_AMT" size="256" summ="default" type="STRING"/>
+    <colinfo id="VAT_AMT" size="256" summ="default" type="STRING"/>
+    <colinfo id="HAP_AMT" size="256" summ="default" type="STRING"/>
+    <colinfo id="CHA_AMT" size="256" summ="default" type="STRING"/>
+    <colinfo id="ASS_AMT1" size="256" summ="default" type="STRING"/>
+    <colinfo id="ASS_DATE1" size="256" summ="default" type="STRING"/>
+    <colinfo id="PAY_RCPT_MEAN_NM" size="256" summ="default" type="STRING"/>
+    <colinfo id="SLIP_ACCTUT_CD" size="256" summ="default" type="STRING"/>
+    <colinfo id="SLIP_WRITNG_DT" size="256" summ="default" type="STRING"/>
+    <colinfo id="SLIP_SERNO" size="256" summ="default" type="STRING"/>
+	<record>
+	    <ACCTUT_CD></ACCTUT_CD>
+        <CUST_NM></CUST_NM>
+        <DTL></DTL>
+        <WON_AMT></WON_AMT>
+        <REQST_AMT></REQST_AMT>
+        <SUPP_AMT></SUPP_AMT>
+        <VAT_AMT></VAT_AMT>
+        <HAP_AMT></HAP_AMT>
+        <CHA_AMT></CHA_AMT>
+        <ASS_AMT1></ASS_AMT1>
+        <ASS_DATE1></ASS_DATE1>
+        <PAY_RCPT_MEAN_NM></PAY_RCPT_MEAN_NM>
+        <SLIP_ACCTUT_CD></SLIP_ACCTUT_CD>
+        <SLIP_WRITNG_DT></SLIP_WRITNG_DT>
+        <SLIP_SERNO></SLIP_SERNO>
+	</record>
+</dataset>
+</root>

@@ -1,0 +1,138 @@
+from django.shortcuts import render, get_object_or_404
+from django.http import HttpResponse
+from .models import BoardList
+import requests, traceback
+from django.shortcuts import render, redirect
+from django.db import connection
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib import messages
+
+# Create your views here.
+TAG_TYPE_MAP = {
+	"4062431206512053339" : "개발자오류",
+	"4062430467230728515" : "기초데이터오류",
+	"4046759869914686137" : "기타",
+	"4062431462386295964" : "데이터수정요청",
+	"4062431462386295964" : "데이터베이스설계오류",
+	"4062431104728936691" : "사용자실수",
+	"4062444602614098566" : "소스코드문제",
+	"4062430981821462507" : "연계오류",
+	"4062431548321775843" : "프로그램업그레이드",
+	"4053701202528745339" : "DB설계수정",
+	"4062444602614098566" : "JAVA단수정",
+	"4062490455185115159" : "RD수정",
+	"4062491529107142759" : "기타",
+	"4062490946487267455" : "데이터수정",
+	"4062430467230728515" : "업무가이드",
+	"4062490642973051206" : "외부업체전달",
+	"4062490027540277272" : "쿼리수정",
+	"4062444456885161442" : "화면수정"
+}
+
+def index(request):
+    url = "https://api.dooray.com/project/v1/projects/4046755324790625408/posts/"  # API 주소
+    headers = {
+        "Authorization": "dooray-api smoqjaev945f:Z4J-cxpKQ36O0M-Vrd41kQ"
+    }   
+    count = 0 
+    page = 0
+    size = 50 
+    all_data = []
+    while True:
+        params = {
+            "page": page,
+            "size": size,
+            "statuses": "open,closed,trash"
+        }
+
+        try:
+            response = requests.get(url, headers=headers, params=params)
+            response.raise_for_status()
+            data = response.json()
+        except requests.RequestException as e:
+            print(f"API 요청 실패: {e}")
+            break
+
+        posts = data.get("result", [])
+        if not posts:
+            break
+
+        for post in posts:
+            tags = post.get('tags', [])
+
+            error_id = tags[1]['id'] if len(tags) > 1 else None
+            handle_id = tags[2]['id'] if len(tags) > 2 else None
+
+            post['ERROR_TP'] = TAG_TYPE_MAP.get(error_id, '알 수 없음')
+            post['HANDLE_TP'] = TAG_TYPE_MAP.get(handle_id, '알 수 없음')
+
+            count += 1
+            all_data.append(post)
+
+        print(f"▶ 현재 {page} 페이지 처리 완료, 게시글 수: {len(posts)}")
+        page += 1
+
+    print(f"\n총 게시글 수: {count}")
+
+    return render(request, 'list.html', {'boards': all_data})
+
+def post(request):
+    return render(request, 'post.html')
+
+def detail(request, post_id):
+    post = get_object_or_404(BoardList, id=post_id)
+    print("📌 선택된 게시글:", post)
+    print("📌 제목:", post.title)
+    print("📌 내용:", post.content)
+    return render(request, 'detail.html', {'post': post})
+
+@csrf_exempt
+def sync(request):
+    if request.method == "POST":
+        try:
+            print("▶ 동기화 시작")
+
+            url = "https://api.dooray.com/project/v1/projects/4046755324790625408/posts/"  # API 주소
+            headers = {
+                "Authorization": "dooray-api smoqjaev945f:Z4J-cxpKQ36O0M-Vrd41kQ"
+            }
+            response = requests.get(url, headers=headers)
+
+            print("▶ 응답 코드:", response.status_code)
+
+            response.raise_for_status()
+            data_list = response.json().get("data",[])
+
+            print("▶ 응답 JSON:", data_list)
+
+            with connection.cursor() as cursor:
+                for item in data_list:
+                    _id = item.get("id")
+                    _sunject = item.get("subject")
+                    _created_at = item.get("created_at")
+ 
+                    print(f"[insert] id={_id}, subject={_subject}")
+                    cursor.execute("""
+                        MERGE INTO BOARD b
+                        USING (SELECT :id AS id FROM dual) src
+                        ON (b.id = src.id)
+                        WHEN NOT MATCHED THEN
+                          INSERT (id, subject, created_at)
+                          VALUES (:id, :subject, TO_DATE(:created_at, 'YYYY-MM-DD"T"HH24:MI:SS'))
+                    """, {
+                        'id': _id,
+                        'subject': _subject,
+                        'created_at': _created_at
+                    })
+                    print("영향갯수 :", cursor.rowcount)
+
+            messages.success(request, f"{len(data_list)}건 동기화 완료!")
+        except Exception as e:
+            print("오류 발생:", e)
+            traceback.print_exc()  # 상세 스택트레이스 출력
+            messages.error(request, f"동기화 실패: {e}")
+            print(response.text)
+    return redirect('index')
+
+
+

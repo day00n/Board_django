@@ -1,0 +1,49 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+    <ul>
+    {% for issue in issues %}
+        <li>{{ issue.content }} | {{ issue.error_type }} | {{ issue.schedule }}</li>
+    {% empty %}
+        <li>글이 없습니다.</li>
+    {% endfor %}
+    </ul>
+
+    <!-- 페이징 영역 -->
+    <nav aria-label="Page navigation">
+    <ul class="pagination justify-content-center">
+        {% if issues.has_previous %}
+        <li class="page-item">
+            <a class="page-link" href="?page=1">&laquo; 처음</a>
+        </li>
+        <li class="page-item">
+            <a class="page-link" href="?page={{ issues.previous_page_number }}">&lsaquo; 이전</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled"><span class="page-link">&laquo; 처음</span></li>
+        <li class="page-item disabled"><span class="page-link">&lsaquo; 이전</span></li>
+        {% endif %}
+
+        <!-- 페이지 숫자 표시 (예: 1 2 3 4 5) -->
+        {% for num in issues.paginator.page_range %}
+        {% if num == issues.number %}
+            <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+        {% elif num >= issues.number|add:-2 and num <= issues.number|add:2 %}
+            <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+        {% endif %}
+        {% endfor %}
+
+        {% if issues.has_next %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ issues.next_page_number }}">다음 &rsaquo;</a>
+        </li>
+        <li class="page-item">
+            <a class="page-link" href="?page={{ issues.paginator.num_pages }}">끝 &raquo;</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled"><span class="page-link">다음 &rsaquo;</span></li>
+        <li class="page-item disabled"><span class="page-link">끝 &raquo;</span></li>
+        {% endif %}
+    </ul>
+    </nav>
+</html>
